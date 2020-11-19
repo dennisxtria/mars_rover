@@ -82,59 +82,79 @@ defmodule Robot do
 
   ## Examples
 
-      iex> Robot.move("FFLFRFF", {0, 2}, :north, %Grid{size: {4, 8}})
+      iex> Robot.move("FFLFRFF", %Robot{position: {0, 2}, direction: :north}, %Grid{size: {4, 8}})
       %Robot{position: {-1, 6}, direction: :north}
 
   """
-  @spec move(String.t(), {non_neg_integer, non_neg_integer}, atom, Grid.t()) :: Robot.t()
-  def move(<<"F"::utf8, tail::binary>>, robot_position, robot_direction, grid) do
-    %Robot{position: new_position, direction: direction} =
-      change_position(robot_position, robot_direction, "F", grid)
+  @spec move(String.t(), Robot.t(), Grid.t()) :: Robot.t()
+  def move(<<"F"::utf8, tail::binary>>, robot, grid) do
+    %Robot{position: new_position, direction: direction} = change_position(robot, "F", grid)
 
-    move(tail, new_position, direction, grid)
+    move(tail, %Robot{position: new_position, direction: direction}, grid)
   end
 
-  def move(<<"L"::utf8, tail::binary>>, robot_position, robot_direction, grid) do
-    %Robot{position: position, direction: new_direction} =
-      change_direction(robot_position, robot_direction, "L")
+  def move(<<"L"::utf8, tail::binary>>, robot, grid) do
+    %Robot{position: position, direction: new_direction} = change_direction(robot, "L")
 
-    move(tail, position, new_direction, grid)
+    move(tail, %Robot{position: position, direction: new_direction}, grid)
   end
 
-  def move(<<"R"::utf8, tail::binary>>, robot_position, robot_direction, grid) do
-    %Robot{position: position, direction: new_direction} =
-      change_direction(robot_position, robot_direction, "R")
+  def move(<<"R"::utf8, tail::binary>>, robot, grid) do
+    %Robot{position: position, direction: new_direction} = change_direction(robot, "R")
 
-    move(tail, position, new_direction, grid)
+    move(tail, %Robot{position: position, direction: new_direction}, grid)
   end
 
-  def move("", position, direction, _grid), do: %Robot{position: position, direction: direction}
+  def move("", robot, _grid), do: robot
 
-  defp change_position({x, y}, :north, "F", %Grid{size: {grid_x, grid_y}})
+  defp change_position(%Robot{position: {x, y}, direction: :north} = robot, "F", %Grid{
+         size: {grid_x, grid_y}
+       })
        when x <= grid_x and y <= grid_y,
-       do: %Robot{position: {x, y + 1}, direction: :north}
+       do: %Robot{robot | position: {x, y + 1}}
 
-  defp change_position({x, y}, :east, "F", %Grid{size: {grid_x, grid_y}})
+  defp change_position(%Robot{position: {x, y}, direction: :east} = robot, "F", %Grid{
+         size: {grid_x, grid_y}
+       })
        when x <= grid_x and y <= grid_y,
-       do: %Robot{position: {x + 1, y}, direction: :east}
+       do: %Robot{robot | position: {x + 1, y}}
 
-  defp change_position({x, y}, :south, "F", %Grid{size: {grid_x, grid_y}})
+  defp change_position(%Robot{position: {x, y}, direction: :south} = robot, "F", %Grid{
+         size: {grid_x, grid_y}
+       })
        when x <= grid_x and y <= grid_y,
-       do: %Robot{position: {x, y - 1}, direction: :south}
+       do: %Robot{robot | position: {x, y - 1}}
 
-  defp change_position({x, y}, :west, "F", %Grid{size: {grid_x, grid_y}})
+  defp change_position(%Robot{position: {x, y}, direction: :west} = robot, "F", %Grid{
+         size: {grid_x, grid_y}
+       })
        when x <= grid_x and y <= grid_y,
-       do: %Robot{position: {x - 1, y}, direction: :west}
+       do: %Robot{robot | position: {x - 1, y}}
 
-  defp change_position({x, y}, direction, _current_instruction, _grid),
-    do: %Robot{position: {x, y}, direction: {direction, "LOST"}}
+  defp change_position(robot, _current_instruction, _grid),
+    do: %Robot{robot | direction: {robot.direction, "LOST"}}
 
-  defp change_direction({x, y}, :north, "L"), do: %Robot{position: {x, y}, direction: :west}
-  defp change_direction({x, y}, :north, "R"), do: %Robot{position: {x, y}, direction: :east}
-  defp change_direction({x, y}, :east, "L"), do: %Robot{position: {x, y}, direction: :north}
-  defp change_direction({x, y}, :east, "R"), do: %Robot{position: {x, y}, direction: :south}
-  defp change_direction({x, y}, :south, "L"), do: %Robot{position: {x, y}, direction: :east}
-  defp change_direction({x, y}, :south, "R"), do: %Robot{position: {x, y}, direction: :west}
-  defp change_direction({x, y}, :west, "R"), do: %Robot{position: {x, y}, direction: :north}
-  defp change_direction({x, y}, :west, "L"), do: %Robot{position: {x, y}, direction: :south}
+  defp change_direction(%Robot{direction: :north} = robot, "L"),
+    do: %Robot{robot | direction: :west}
+
+  defp change_direction(%Robot{direction: :north} = robot, "R"),
+    do: %Robot{robot | direction: :east}
+
+  defp change_direction(%Robot{direction: :east} = robot, "L"),
+    do: %Robot{robot | direction: :north}
+
+  defp change_direction(%Robot{direction: :east} = robot, "R"),
+    do: %Robot{robot | direction: :south}
+
+  defp change_direction(%Robot{direction: :south} = robot, "L"),
+    do: %Robot{robot | direction: :east}
+
+  defp change_direction(%Robot{direction: :south} = robot, "R"),
+    do: %Robot{robot | direction: :west}
+
+  defp change_direction(%Robot{direction: :west} = robot, "R"),
+    do: %Robot{robot | direction: :north}
+
+  defp change_direction(%Robot{direction: :west} = robot, "L"),
+    do: %Robot{robot | direction: :south}
 end

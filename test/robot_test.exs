@@ -8,11 +8,11 @@ defmodule RobotTest do
   @grid %Grid{size: {4, 5}}
 
   describe "robot process functionality" do
-    test "correct user input get split successfully" do
+    test "correct user input gets split successfully" do
       assert Robot.process("(2, 3, E) LFRFF") == ["2", "3", "E", "LFRFF"]
     end
 
-    test "correct user input get split ssuccessfully" do
+    test "user input not so well formatted gets split successfully" do
       assert Robot.process("(2,3, ELFRFF") == ["2", "3", "ELFRFF"]
     end
   end
@@ -49,17 +49,19 @@ defmodule RobotTest do
 
   describe "robot move functionality" do
     test "moves within grid size" do
-      assert Robot.move("LFRFF", {2, 3}, :east, %Grid{size: {4, 8}}) == %Robot{
-               position: {4, 4},
-               direction: :east
-             }
+      assert Robot.move("LFRFF", %Robot{position: {2, 3}, direction: :east}, %Grid{size: {4, 8}}) ==
+               %Robot{
+                 position: {4, 4},
+                 direction: :east
+               }
     end
 
     test "moves without grid size functionality and gets lost" do
-      assert Robot.move("FFLFRFF", {2, 3}, :east, %Grid{size: {4, 8}}) == %Robot{
-               position: {5, 4},
-               direction: {:east, "LOST"}
-             }
+      assert Robot.move("FFLFRFF", %Robot{position: {2, 3}, direction: :east}, %Grid{size: {4, 8}}) ==
+               %Robot{
+                 position: {5, 4},
+                 direction: {:east, "LOST"}
+               }
     end
   end
 end

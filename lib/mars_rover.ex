@@ -33,8 +33,7 @@ defmodule MarsRover do
          true <- Robot.valid_instructions?(instructions) do
       robot = Robot.create(robot_x, robot_y, direction)
 
-      %Robot{position: {x, y}, direction: direction} =
-        Robot.move(instructions, robot.position, robot.direction, grid)
+      %Robot{position: {x, y}, direction: direction} = Robot.move(instructions, robot, grid)
 
       IO.puts("(#{x}, #{y}, #{inspect(direction)})")
     else
