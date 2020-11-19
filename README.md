@@ -38,3 +38,9 @@ Interactive Elixir (1.11.2) - press Ctrl+C to exit (type h() ENTER for help)
 iex> MarsRover.start()
 ```
 
+The documentation can also be generated from the command line and a separate `docs` folder will be generated in the current directory by using
+
+```bash
+mix docs
+```
+
